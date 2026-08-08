@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="日本語学習">
+    <meta name="apple-mobile-web-app-title" content="にほんご学習">
     <meta name="theme-color" content="#1F9E92">
     <link rel="manifest" href="manifest.json">
-    <title>日本語 - Académie 13 Règles Complètes</title>
+    <title>にほんご - Académie Hiragana + Grammaire</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #1F9E92; --primary-dark: #0F2138; --accent: #D9A526; --success: #4CAF50; --danger: #FF6B6B; }
@@ -17,11 +17,13 @@
         header { text-align: center; color: white; margin-bottom: 20px; }
         header h1 { font-size: 36px; font-weight: bold; }
         header p { font-size: 18px; color: var(--primary); }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(255,255,255,0.1); padding: 6px; border-radius: 8px; }
-        .tab-btn { flex: 1; padding: 16px; border: none; border-radius: 6px; background: transparent; color: white; font-weight: 700; cursor: pointer; font-size: 16px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(255,255,255,0.1); padding: 6px; border-radius: 8px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; padding: 16px; border: none; border-radius: 6px; background: transparent; color: white; font-weight: 700; cursor: pointer; font-size: 14px; }
         .tab-btn.active { background: var(--primary); box-shadow: 0 4px 12px rgba(31, 158, 146, 0.3); }
         .content { display: none; }
         .content.active { display: block; }
+        
+        /* GRAMMAIRE STYLES */
         .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .rule-card { background: white; border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .rule-card .number { font-size: 40px; font-weight: bold; color: var(--primary); margin-bottom: 6px; }
@@ -30,11 +32,16 @@
         .lesson-section { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .lesson-title { font-size: 32px; color: var(--primary-dark); margin-bottom: 20px; font-weight: bold; }
         .section-text { font-size: 18px; margin: 16px 0; line-height: 1.8; }
-        .japanese-large { font-size: 68px; font-weight: bold; color: var(--primary); margin: 16px 0; }
+        .hiragana-large { font-size: 68px; font-weight: bold; color: var(--primary); margin: 16px 0; }
         .romaji-line { font-size: 24px; color: #D9A526; font-weight: 700; margin: 12px 0; }
         .translation-line { font-size: 18px; color: #999; font-style: italic; margin-bottom: 16px; }
         .example-box { background: #f9f9f9; border-left: 6px solid var(--primary); padding: 20px; border-radius: 4px; margin: 18px 0; }
         .note { background: #fffacd; border-left: 6px solid var(--accent); padding: 18px; border-radius: 4px; margin: 18px 0; font-size: 17px; }
+        .vocab-grid { display: grid; gap: 10px; margin: 20px 0; }
+        .vocab-item { background: #f5f5f5; padding: 15px; border-left: 4px solid var(--primary); border-radius: 4px; }
+        .vocab-item-jp { font-size: 32px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+        .vocab-item-roma { font-size: 16px; color: var(--accent); font-weight: 700; margin-bottom: 5px; }
+        .vocab-item-fr { font-size: 15px; color: #666; }
         .exercise { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .exercise-title { font-weight: 700; color: var(--primary-dark); margin-bottom: 18px; font-size: 18px; }
         .qcm-option { background: white; border: 2px solid #ddd; border-radius: 8px; padding: 16px; cursor: pointer; font-size: 16px; margin: 12px 0; transition: all 0.2s; }
@@ -47,22 +54,39 @@
         .feedback.show { display: block; }
         .feedback.correct { background: #d4edda; border-color: var(--success); color: #155724; }
         .feedback.wrong { background: #f8d7da; border-color: var(--danger); color: #721c24; }
+
+        /* ALPHABET LEARNING STYLES */
+        .alphabet-container { background: white; border-radius: 12px; padding: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .alphabet-progress { background: rgba(31, 158, 146, 0.1); border-radius: 8px; padding: 16px; margin-bottom: 20px; color: var(--primary-dark); font-size: 16px; font-weight: 700; }
+        
+        /* FLASHCARD STYLE */
+        .flashcard { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); transition: transform 0.3s; color: white; }
+        .flashcard:hover { transform: scale(1.05); }
+        .flashcard-front { font-size: 80px; font-weight: bold; }
+        .flashcard-back { font-size: 36px; opacity: 0.8; }
+        .flashcard-hint { font-size: 14px; opacity: 0.6; margin-top: 20px; }
+        
+        /* INPUT STYLE */
+        .input-box { border: 2px solid #ddd; border-radius: 8px; padding: 16px; font-size: 18px; width: 100%; margin: 16px 0; }
+        .input-box:focus { outline: none; border-color: var(--primary); }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>日本語 - Académie Complète</h1>
-            <p>13 Règles + Exercices Complets 🚀</p>
+            <h1>にほんご - Académie 13 Règles</h1>
+            <p>Grammaire + Alphabets (Hiragana/Katakana/Kanji) 🚀</p>
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="app.switchTab('lessons')">📚 Leçons</button>
-            <button class="tab-btn" onclick="app.switchTab('vocab')">🎴 Vocabulaire</button>
+            <button class="tab-btn active" onclick="app.switchTab('grammar')">📚 Grammaire</button>
+            <button class="tab-btn" onclick="app.switchTab('hiragana')">📝 Hiragana</button>
+            <button class="tab-btn" onclick="app.switchTab('katakana')">📝 Katakana</button>
+            <button class="tab-btn" onclick="app.switchTab('kanji')">📝 Kanji</button>
         </div>
 
-        <!-- LESSONS -->
-        <div id="lessonsContent" class="content active">
+        <!-- ========== GRAMMAIRE ========== -->
+        <div id="grammarContent" class="content active">
             <div id="homeScreen">
                 <div class="progress">
                     <strong id="progressText">Progression: 0%</strong> | ✅ <span id="completedCount">0</span>/13
@@ -97,34 +121,58 @@
             </div>
         </div>
 
-        <!-- VOCABULARY -->
-        <div id="vocabContent" class="content">
-            <div style="background: white; border-radius: 12px; padding: 28px;">
-                <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">📚 Vocabulaire</h2>
-                <p style="font-size: 18px; color: #999;">Section vocabulaire en développement...</p>
-                <button class="btn" onclick="app.switchTab('lessons')" style="margin-top: 20px;">← Retour aux leçons</button>
+        <!-- ========== HIRAGANA ========== -->
+        <div id="hiraganaContent" class="content">
+            <div class="alphabet-container">
+                <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">📝 Hiragana</h2>
+                <div class="alphabet-progress">
+                    Progression: <span id="hiraganaProgress">0</span>/46 | Score session: <span id="hiraganaScore">0%</span>
+                </div>
+                <div id="hiraganaExercise"></div>
+            </div>
+        </div>
+
+        <!-- ========== KATAKANA ========== -->
+        <div id="katakanaContent" class="content">
+            <div class="alphabet-container">
+                <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">📝 Katakana</h2>
+                <div class="alphabet-progress">
+                    Progression: <span id="katakanaProgress">0</span>/46 | Score session: <span id="katakanaScore">0%</span>
+                </div>
+                <div id="katakanaExercise"></div>
+            </div>
+        </div>
+
+        <!-- ========== KANJI ========== -->
+        <div id="kanjiContent" class="content">
+            <div class="alphabet-container">
+                <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">📝 Kanji (100 communs)</h2>
+                <div class="alphabet-progress">
+                    Progression: <span id="kanjiProgress">0</span>/100 | Score session: <span id="kanjiScore">0%</span>
+                </div>
+                <div id="kanjiExercise"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // DONNÉES COMPLÈTES - 13 LEÇONS AVEC CONTENU
+        // ========== GRAMMAIRE DATA (EN HIRAGANA) ==========
         const rulesData = [
             {
                 id: 1,
                 title: "L'ordre SOV",
                 vocabulary: [
-                    { jp: "私", roma: "watashi", fr: "Moi" },
-                    { jp: "水", roma: "mizu", fr: "Eau" },
-                    { jp: "彼", roma: "kare", fr: "Il" },
-                    { jp: "本", roma: "hon", fr: "Livre" },
-                    { jp: "飲みます", roma: "nomimasu", fr: "Boit" },
-                    { jp: "読みます", roma: "yomimasu", fr: "Lit" }
+                    { jp: "わたし", roma: "watashi", fr: "Moi" },
+                    { jp: "みず", roma: "mizu", fr: "Eau" },
+                    { jp: "かれ", roma: "kare", fr: "Il" },
+                    { jp: "ほん", roma: "hon", fr: "Livre" },
+                    { jp: "のみます", roma: "nomimasu", fr: "Boit" },
+                    { jp: "よみます", roma: "yomimasu", fr: "Lit" }
                 ],
                 lesson: {
                     title: "L'ordre SOV",
                     intro: "Le japonais suit un ordre différent du français!",
-                    content: "<p><strong>Français (SVO):</strong></p><p>Je bois de l'eau</p><p><strong>Japonais (SOV):</strong></p><div class='japanese-large'>私は水を飲みます</div><div class='romaji-line'>watashi wa mizu wo nomimasu</div><div class='translation-line'>Littéralement: Moi - eau - bois = Je bois de l'eau</div><div class='note'><strong>🔑 RÈGLE D'OR:</strong> Le verbe vient TOUJOURS en DERNIER!</div>"
+                    content: "<p><strong>Français (SVO):</strong></p><p>Je bois de l'eau</p><p><strong>Japonais (SOV):</strong></p><div class='hiragana-large'>わたしはみずをのみます</div><div class='romaji-line'>watashi wa mizu wo nomimasu</div><div class='translation-line'>Littéralement: Moi - eau - bois = Je bois de l'eau</div><div class='note'><strong>🔑 RÈGLE D'OR:</strong> Le verbe vient TOUJOURS en DERNIER!</div>"
                 },
                 exercises: [
                     {
@@ -133,48 +181,48 @@
                         options: ["Sujet+Verbe+Objet (SVO)", "Sujet+Objet+Verbe (SOV)", "Verbe+Sujet+Objet (VSO)"],
                         correct: 1,
                         feedback: {
-                            correct: "✅ Exactement! SOV: Sujet → Objet → Verbe. Exemple: 私は水を飲みます",
-                            wrong: ["❌ C'est l'ordre français (SVO). Au Japon, c'est SOV!", "❌ VSO n'existe pas. Japonais utilise strictement SOV!"]
+                            correct: "✅ Exactement! SOV: Sujet → Objet → Verbe.",
+                            wrong: ["❌ C'est l'ordre français (SVO).", "❌ VSO n'existe pas en japonais!"]
                         }
                     },
                     {
                         type: "qcm",
-                        question: "Où est le VERBE dans 私は水を飲みます?",
-                        options: ["私は", "水を", "飲みます"],
+                        question: "Où est le VERBE dans わたしはみずをのみます?",
+                        options: ["わたしは", "みずを", "のみます"],
                         correct: 2,
                         feedback: {
-                            correct: "✅ Parfait! 飲みます est le verbe à la fin.",
-                            wrong: ["❌ 私 est le sujet.", "❌ 水 est l'objet."]
+                            correct: "✅ Parfait! のみます est le verbe à la fin.",
+                            wrong: ["❌ わたし est le sujet.", "❌ みず est l'objet."]
                         }
                     },
                     {
-                        type: "fill",
-                        question: "私 = ?",
+                        type: "qcm",
+                        question: "わたし = ?",
                         options: ["Lui", "Moi", "Tu"],
                         correct: 1,
                         feedback: {
-                            correct: "✅ Correct! 私 = Moi (première personne).",
-                            wrong: ["❌ Lui = 彼", "❌ C'est Moi, pas Tu."]
+                            correct: "✅ Correct! わたし = Moi.",
+                            wrong: ["❌ Lui = かれ", "❌ C'est Moi!"]
                         }
                     },
                     {
                         type: "qcm",
-                        question: "Traduis: 本",
-                        options: ["Eau", "Livre", "Je"],
-                        correct: 1,
+                        question: "Traduis: みず",
+                        options: ["Eau", "Livre", "Personne"],
+                        correct: 0,
                         feedback: {
-                            correct: "✅ Correct! 本 = Livre. Exemple: 彼は本を読みます (Il lit un livre)",
-                            wrong: ["❌ Eau = 水, pas 本", "❌ Je = 私, pas 本"]
+                            correct: "✅ Correct! みず = Eau.",
+                            wrong: ["❌ Livre = ほん", "❌ Regarde la leçon"]
                         }
                     },
                     {
                         type: "qcm",
-                        question: "Quel mot = eau?",
-                        options: ["私", "水", "本"],
+                        question: "のみます = ?",
+                        options: ["Lit", "Boit", "Va"],
                         correct: 1,
                         feedback: {
-                            correct: "✅ Exact! 水 = Eau.",
-                            wrong: ["❌ 私 = Moi", "❌ 本 = Livre"]
+                            correct: "✅ Correct! のみます = Boit",
+                            wrong: ["❌ Lit = よみます", "❌ Regarde la leçon"]
                         }
                     }
                 ]
@@ -183,67 +231,22 @@
                 id: 2,
                 title: "Particules は を に",
                 vocabulary: [
-                    { jp: "学生", roma: "gakusei", fr: "Étudiant" },
+                    { jp: "がくせい", roma: "gakusei", fr: "Étudiant" },
                     { jp: "です", roma: "desu", fr: "Être" },
-                    { jp: "東京", roma: "toukyou", fr: "Tokyo" },
-                    { jp: "行きます", roma: "ikimasu", fr: "Aller" }
+                    { jp: "ときょう", roma: "toukyou", fr: "Tokyo" },
+                    { jp: "いきます", roma: "ikimasu", fr: "Aller" }
                 ],
                 lesson: {
                     title: "Particules は を に",
                     intro: "Les particules marquent la fonction des mots!",
-                    content: "<p><strong>は (wa) = Sujet/Thème</strong></p><p><strong>を (wo) = Objet direct</strong></p><p><strong>に (ni) = Direction/Destination</strong></p><div class='japanese-large'>私は学生です</div><div class='romaji-line'>watashi wa gakusei desu</div><div class='translation-line'>Je suis étudiant</div>"
+                    content: "<p><strong>は (wa) = Sujet/Thème</strong></p><p><strong>を (wo) = Objet direct</strong></p><p><strong>に (ni) = Direction/Destination</strong></p><div class='hiragana-large'>わたしはがくせいです</div><div class='romaji-line'>watashi wa gakusei desu</div><div class='translation-line'>Je suis étudiant</div>"
                 },
                 exercises: [
-                    {
-                        type: "qcm",
-                        question: "Que marque は (wa)?",
-                        options: ["Sujet/Thème", "Objet direct", "Direction"],
-                        correct: 0,
-                        feedback: {
-                            correct: "✅ Correct! は = Sujet ou thème.",
-                            wrong: ["❌ Objet = を", "❌ Direction = に"]
-                        }
-                    },
-                    {
-                        type: "qcm",
-                        question: "Que marque を (wo)?",
-                        options: ["Sujet", "Objet direct", "Direction"],
-                        correct: 1,
-                        feedback: {
-                            correct: "✅ Correct! を = Objet direct.",
-                            wrong: ["❌ Sujet = は", "❌ Direction = に"]
-                        }
-                    },
-                    {
-                        type: "qcm",
-                        question: "Que marque に (ni)?",
-                        options: ["Sujet", "Objet", "Direction/Destination"],
-                        correct: 2,
-                        feedback: {
-                            correct: "✅ Correct! に = Direction. Exemple: 東京に行きます (Aller à Tokyo)",
-                            wrong: ["❌ Sujet = は", "❌ Objet = を"]
-                        }
-                    },
-                    {
-                        type: "fill",
-                        question: "Dans '私は学生です', は marque:",
-                        options: ["l'objet", "le sujet", "la direction"],
-                        correct: 1,
-                        feedback: {
-                            correct: "✅ Exact! 私は = Moi (sujet)",
-                            wrong: ["❌ Non, は marque le sujet", "❌ Non, に marque la direction"]
-                        }
-                    },
-                    {
-                        type: "qcm",
-                        question: "東京に行きます veut dire:",
-                        options: ["Tokyo est...", "Je vais à Tokyo", "Tokyo boit"],
-                        correct: 1,
-                        feedback: {
-                            correct: "✅ Correct! に marque la direction.",
-                            wrong: ["❌ Regarde la particule", "❌ 行きます = aller"]
-                        }
-                    }
+                    { type: "qcm", question: "Que marque は (wa)?", options: ["Sujet/Thème", "Objet direct", "Direction"], correct: 0, feedback: { correct: "✅ Correct! は = Sujet ou thème.", wrong: ["❌ Objet = を", "❌ Direction = に"] } },
+                    { type: "qcm", question: "Que marque を (wo)?", options: ["Sujet", "Objet direct", "Direction"], correct: 1, feedback: { correct: "✅ Correct! を = Objet direct", wrong: ["❌ Sujet = は", "❌ Direction = に"] } },
+                    { type: "qcm", question: "Que marque に (ni)?", options: ["Sujet", "Objet", "Direction"], correct: 2, feedback: { correct: "✅ Correct! に = Direction/Destination", wrong: ["❌ Sujet = は", "❌ Objet = を"] } },
+                    { type: "qcm", question: "がくせい = ?", options: ["Professeur", "Étudiant", "École"], correct: 1, feedback: { correct: "✅ がくせい = Étudiant", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } },
+                    { type: "qcm", question: "ときょう = ?", options: ["Tokyo", "Kyoto", "Osaka"], correct: 0, feedback: { correct: "✅ ときょう = Tokyo", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } }
                 ]
             },
             {
@@ -251,238 +254,338 @@
                 title: "Copule です",
                 vocabulary: [
                     { jp: "これ", roma: "kore", fr: "Ceci" },
-                    { jp: "あれ", roma: "are", fr: "Cela" }
+                    { jp: "あれ", roma: "are", fr: "Cela" },
+                    { jp: "ねこ", roma: "neko", fr: "Chat" },
+                    { jp: "いぬ", roma: "inu", fr: "Chien" }
                 ],
                 lesson: {
                     title: "La copule です",
-                    intro: "です = être (verbe poli)",
-                    content: "<div class='japanese-large'>これは本です</div><div class='romaji-line'>kore wa hon desu</div><div class='translation-line'>Ceci est un livre</div><div class='note'><strong>です</strong> est le verbe être au niveau poli. C'est le verbe le plus courant en japonais!</div>"
+                    intro: "Comment dire 'c'est' en japonais!",
+                    content: "<p><strong>です</strong> = être/c'est</p><div class='hiragana-large'>これはねこです</div><div class='romaji-line'>kore wa neko desu</div><div class='translation-line'>Ceci est un chat</div><div class='note'><strong>🔑 Note:</strong> です ne change pas avec le sujet</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "です = ?", options: ["Être (poli)", "Aller", "Faire"], correct: 0, feedback: { correct: "✅ です = verbe être poli", wrong: ["❌ Aller = 行きます", "❌ Faire = します"] } },
-                    { type: "qcm", question: "これは本です veut dire:", options: ["Cela devient un livre", "Ceci est un livre", "Je lis un livre"], correct: 1, feedback: { correct: "✅ Correct! これ = ceci", wrong: ["❌ Étudie la structure", "❌ Regarde を"] } },
-                    { type: "fill", question: "Traduis: これ", options: ["Cela là-bas", "Ceci", "Cela"], correct: 1, feedback: { correct: "✅ Correct!", wrong: ["❌ C'est あれ", "❌ C'est あの"] } },
-                    { type: "qcm", question: "Quelle est la forme negative?", options: ["です ない", "ではありません", "です まし"], correct: 1, feedback: { correct: "✅ Correct! Négatif = ではありません", wrong: ["❌ Pas assez poli", "❌ Ça n'existe pas"] } },
-                    { type: "qcm", question: "Ces の本 veut dire:", options: ["Mes livre", "Mon livre", "Tu lis"], correct: 1, feedback: { correct: "✅ Correct! の indique la possession", wrong: ["❌ Regarde の", "❌ Étudie la grammaire"] } }
+                    { type: "qcm", question: "これ = ?", options: ["Cela", "Ceci", "Celui-ci"], correct: 1, feedback: { correct: "✅ これ = Ceci (proche)", wrong: ["❌ Cela = あれ", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "あれ = ?", options: ["Ceci", "Cela", "Ici"], correct: 1, feedback: { correct: "✅ あれ = Cela (loin)", wrong: ["❌ Ceci = これ", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "ねこ = ?", options: ["Chien", "Chat", "Oiseau"], correct: 1, feedback: { correct: "✅ ねこ = Chat", wrong: ["❌ Chien = いぬ", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "いぬ = ?", options: ["Chat", "Chien", "Oiseau"], correct: 1, feedback: { correct: "✅ いぬ = Chien", wrong: ["❌ Chat = ねこ", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "Qu'est-ce que です?", options: ["Verbe d'action", "Copule (être)", "Particule"], correct: 1, feedback: { correct: "✅ です = Copule (être)", wrong: ["❌ C'est pas un verbe d'action", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 4,
                 title: "Adjectifs い",
                 vocabulary: [
-                    { jp: "大きい", roma: "ookii", fr: "Grand" },
-                    { jp: "小さい", roma: "chiisai", fr: "Petit" },
-                    { jp: "古い", roma: "furui", fr: "Vieux" },
-                    { jp: "新しい", roma: "atarashii", fr: "Nouveau" }
+                    { jp: "おおきい", roma: "ookii", fr: "Grand" },
+                    { jp: "ちいさい", roma: "chiisai", fr: "Petit" },
+                    { jp: "ふるい", roma: "furui", fr: "Vieux" },
+                    { jp: "あたらしい", roma: "atarashii", fr: "Nouveau" }
                 ],
                 lesson: {
-                    title: "Adjectifs en い",
-                    intro: "Les adjectifs en い se conjuguent directement!",
-                    content: "<div class='japanese-large'>大きい本</div><div class='romaji-line'>ookii hon</div><div class='translation-line'>Un grand livre</div><div class='note'>Les adjectifs い modifient directement le nom sans particule.</div>"
+                    title: "Adjectifs い",
+                    intro: "Les adjectifs qui se terminent par い",
+                    content: "<div class='hiragana-large'>おおきい</div><div class='romaji-line'>ookii (Grand)</div><div class='note'><strong>🔑 Rule:</strong> Adjectifs い se mettent avant le nom et se conju avec いです</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "大きい = ?", options: ["Grand", "Petit", "Nouveau"], correct: 0, feedback: { correct: "✅ 大きい = Grand", wrong: ["❌ Petit = 小さい", "❌ Étudie le voc"] } },
-                    { type: "qcm", question: "Traduis: 小さい", options: ["Nouveau", "Petit", "Vieux"], correct: 1, feedback: { correct: "✅ 小さい = Petit", wrong: ["❌ Étudie le voc", "❌ 新しい = nouveau"] } },
-                    { type: "fill", question: "古い = ?", options: ["Nouveau", "Vieux", "Petit"], correct: 1, feedback: { correct: "✅ 古い = Vieux", wrong: ["❌ 新しい = Nouveau", "❌ 小さい = Petit"] } },
-                    { type: "qcm", question: "新しい本は大きいです. 本est:", options: ["Vieux et petit", "Nouveau et grand", "Petit"], correct: 1, feedback: { correct: "✅ Correct! Deux adjectifs い ensemble", wrong: ["❌ Relis la phrase", "❌ Étudie"] } },
-                    { type: "qcm", question: "Les adjectifs い se conjuguent:", options: ["Avec です", "Directement", "Avec な"], correct: 1, feedback: { correct: "✅ Correct! い-adjectives se conjuguent seuls", wrong: ["❌ Ça, c'est な", "❌ Règle 4!"] } }
+                    { type: "qcm", question: "おおきい = ?", options: ["Petit", "Grand", "Vieux"], correct: 1, feedback: { correct: "✅ おおきい = Grand", wrong: ["❌ Petit = ちいさい", "❌ Regarde"] } },
+                    { type: "qcm", question: "ちいさい = ?", options: ["Grand", "Petit", "Nouveau"], correct: 1, feedback: { correct: "✅ ちいさい = Petit", wrong: ["❌ Grand = おおきい", "❌ Regarde"] } },
+                    { type: "qcm", question: "ふるい = ?", options: ["Vieux", "Nouveau", "Petit"], correct: 0, feedback: { correct: "✅ ふるい = Vieux", wrong: ["❌ Nouveau = あたらしい", "❌ Regarde"] } },
+                    { type: "qcm", question: "あたらしい = ?", options: ["Vieux", "Grand", "Nouveau"], correct: 2, feedback: { correct: "✅ あたらしい = Nouveau", wrong: ["❌ Vieux = ふるい", "❌ Regarde"] } },
+                    { type: "qcm", question: "Position de l'adjectif い?", options: ["Après le nom", "Avant le nom", "Peut importe"], correct: 1, feedback: { correct: "✅ Avant le nom!", wrong: ["❌ C'est avant!", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 5,
                 title: "Adjectifs な",
                 vocabulary: [
-                    { jp: "綺麗な", roma: "kirei-na", fr: "Joli" },
-                    { jp: "簡単な", roma: "kantan-na", fr: "Facile" },
-                    { jp: "難しい", roma: "muzukashii", fr: "Difficile" }
+                    { jp: "きれいな", roma: "kireina", fr: "Beau/Propre" },
+                    { jp: "かんたんな", roma: "kantanna", fr: "Facile" },
+                    { jp: "むずかしい", roma: "muzukashii", fr: "Difficile" }
                 ],
                 lesson: {
-                    title: "Adjectifs en な",
-                    intro: "Les adjectifs な nécessitent な avant le nom!",
-                    content: "<div class='japanese-large'>綺麗な水</div><div class='romaji-line'>kirei-na mizu</div><div class='translation-line'>Une belle eau</div><div class='note'>Contrairement aux い-adjectifs, les な-adjectifs nécessitent な avant le nom!</div>"
+                    title: "Adjectifs な",
+                    intro: "Les adjectifs qui se terminent par な",
+                    content: "<div class='hiragana-large'>きれいな</div><div class='romaji-line'>kireina (Beau)</div><div class='note'><strong>🔑 Rule:</strong> Adjectifs な ont な avant le nom</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "綺麗な = ?", options: ["Joli/Beau", "Grand", "Facile"], correct: 0, feedback: { correct: "✅ 綺麗な = Joli", wrong: ["❌ Grand = 大きい", "❌ Étudie le voc"] } },
-                    { type: "qcm", question: "Traduis: 簡単な", options: ["Difficile", "Facile", "Joli"], correct: 1, feedback: { correct: "✅ 簡単な = Facile", wrong: ["❌ 難しい = Difficile", "❌ Étudie"] } },
-                    { type: "fill", question: "難しい est:", options: ["Un な-adj", "Un い-adj", "Un verbe"], correct: 1, feedback: { correct: "✅ Rare exception! 難しい est un い-adj", wrong: ["❌ Il se termine en い", "❌ Étudie la règle 4"] } },
-                    { type: "qcm", question: "La différence clé:", options: ["Pas de différence", "な-adj need な before noun", "い-adj need な before noun"], correct: 1, feedback: { correct: "✅ Exact! 綺麗な 水 vs 大きい 本", wrong: ["❌ Ils sont différents", "❌ Regarde les adjectifs"] } },
-                    { type: "qcm", question: "綺麗な 水 et 簡単な 問題 sont:", options: ["Identiques", "Deux な-adjectifs", "Un mixture"], correct: 1, feedback: { correct: "✅ Correct! Tous deux ont な", wrong: ["❌ Regarde la structure", "❌ Étudie"] } }
+                    { type: "qcm", question: "きれいな = ?", options: ["Beau/Propre", "Facile", "Difficile"], correct: 0, feedback: { correct: "✅ きれいな = Beau", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } },
+                    { type: "qcm", question: "かんたんな = ?", options: ["Difficile", "Facile", "Beau"], correct: 1, feedback: { correct: "✅ かんたんな = Facile", wrong: ["❌ Difficile = むずかしい", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "むずかしい = ?", options: ["Facile", "Difficile", "Beau"], correct: 1, feedback: { correct: "✅ むずかしい = Difficile", wrong: ["❌ Facile = かんたん", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "Différence い vs な?", options: ["Aucune", "い est + commun", "な a な avant le nom"], correct: 2, feedback: { correct: "✅ な adjectifs ont な!", wrong: ["❌ Il y a une différence", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Quelle position?", options: ["Après le nom", "Avant le nom", "Peut importe"], correct: 1, feedback: { correct: "✅ Avant le nom!", wrong: ["❌ C'est avant!", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 6,
                 title: "Verbes Groupe 1",
                 vocabulary: [
-                    { jp: "食べます", roma: "tabemasu", fr: "Manger" },
-                    { jp: "見ます", roma: "mimasu", fr: "Regarder" },
-                    { jp: "起きます", roma: "okimasu", fr: "Se lever" }
+                    { jp: "たべます", roma: "tabemasu", fr: "Manger" },
+                    { jp: "みます", roma: "mimasu", fr: "Regarder" },
+                    { jp: "おきます", roma: "okimasu", fr: "Se lever" }
                 ],
                 lesson: {
                     title: "Verbes Groupe 1",
-                    intro: "Les verbes Groupe 1 se conjuguent en -masu/-masen!",
-                    content: "<div class='japanese-large'>毎日食べます</div><div class='romaji-line'>mainichi tabemasu</div><div class='translation-line'>Je mange tous les jours</div><div class='note'>Groupe 1 = se termine par -éru ou -iru au dictionnaire</div>"
+                    intro: "Verbes qui se terminent par -ます",
+                    content: "<div class='hiragana-large'>たべます</div><div class='romaji-line'>tabemasu (Manger)</div><div class='note'><strong>🔑 Note:</strong> Groupe 1 = racine + ます</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "食べます = ?", options: ["Manger", "Regarder", "Se lever"], correct: 0, feedback: { correct: "✅ 食べます = Manger (poli)", wrong: ["❌ Voir = 見ます", "❌ Étudie le voc"] } },
-                    { type: "qcm", question: "Traduis: 見ます", options: ["Manger", "Regarder", "Se lever"], correct: 1, feedback: { correct: "✅ 見ます = Regarder", wrong: ["❌ 食べます = Manger", "❌ Étudie"] } },
-                    { type: "fill", question: "起きます = ?", options: ["Manger", "Se lever", "Regarder"], correct: 1, feedback: { correct: "✅ 起きます = Se lever", wrong: ["❌ C'est un autre verbe", "❌ Étudie le voc"] } },
-                    { type: "qcm", question: "La forme négative de 食べます est:", options: ["食べません", "食べまし", "食べ ない"], correct: 0, feedback: { correct: "✅ 食べません = Je ne mange pas", wrong: ["❌ Regarde la conjugaison", "❌ ません = négatif poli"] } },
-                    { type: "qcm", question: "毎日 veut dire:", options: ["Hier", "Demain", "Chaque jour"], correct: 2, feedback: { correct: "✅ 毎日 = Chaque jour / Tous les jours", wrong: ["❌ Étudie le voc", "❌ 明日 = demain"] } }
+                    { type: "qcm", question: "たべます = ?", options: ["Regarder", "Manger", "Se lever"], correct: 1, feedback: { correct: "✅ たべます = Manger", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } },
+                    { type: "qcm", question: "みます = ?", options: ["Manger", "Regarder", "Partir"], correct: 1, feedback: { correct: "✅ みます = Regarder", wrong: ["❌ Manger = たべます", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "おきます = ?", options: ["Se coucher", "Se lever", "Partir"], correct: 1, feedback: { correct: "✅ おきます = Se lever", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } },
+                    { type: "qcm", question: "Où est le temps?", options: ["Au début", "À la fin (ます)", "Pas de temps"], correct: 1, feedback: { correct: "✅ À la fin avec ます!", wrong: ["❌ C'est à la fin!", "❌ ます indique le temps"] } },
+                    { type: "qcm", question: "Forme: Groupe 1 = ?", options: ["Racine seule", "Racine + ます", "Racine + う"], correct: 1, feedback: { correct: "✅ Racine + ます!", wrong: ["❌ Regarde la leçon", "❌ C'est ます"] } }
                 ]
             },
             {
                 id: 7,
                 title: "Verbes Groupe 2",
                 vocabulary: [
-                    { jp: "書きます", roma: "kakimasu", fr: "Écrire" },
-                    { jp: "聞きます", roma: "kikimasu", fr: "Écouter" },
-                    { jp: "歩きます", roma: "arukimasu", fr: "Marcher" }
+                    { jp: "かきます", roma: "kakimasu", fr: "Écrire" },
+                    { jp: "ききます", roma: "kikimasu", fr: "Écouter" },
+                    { jp: "あるきます", roma: "arukimasu", fr: "Marcher" }
                 ],
                 lesson: {
                     title: "Verbes Groupe 2",
-                    intro: "Les verbes Groupe 2 se conjuguent différemment!",
-                    content: "<div class='japanese-large'>私は本を書きます</div><div class='romaji-line'>watashi wa hon wo kakimasu</div><div class='translation-line'>J'écris un livre</div><div class='note'>Groupe 2 = se termine par -u, -ku, -gu, -su, -tsu, -nu, -bu, -mu, -yu, -ru au dictionnaire</div>"
+                    intro: "Verbes qui se terminent par -きます",
+                    content: "<div class='hiragana-large'>かきます</div><div class='romaji-line'>kakimasu (Écrire)</div><div class='note'><strong>🔑 Note:</strong> Groupe 2 = racine K + きます</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "書きます = ?", options: ["Écrire", "Écouter", "Marcher"], correct: 0, feedback: { correct: "✅ 書きます = Écrire", wrong: ["❌ 聞きます = Écouter", "❌ Étudie"] } },
-                    { type: "qcm", question: "Traduis: 聞きます", options: ["Écrire", "Écouter", "Marcher"], correct: 1, feedback: { correct: "✅ 聞きます = Écouter", wrong: ["❌ 書きます = Écrire", "❌ Étudie"] } },
-                    { type: "fill", question: "歩きます = ?", options: ["Écrire", "Marcher", "Écouter"], correct: 1, feedback: { correct: "✅ 歩きます = Marcher", wrong: ["❌ C'est un autre verbe", "❌ Étudie le voc"] } },
-                    { type: "qcm", question: "書きます et 食べます sont:", options: ["Le même groupe", "Groupe 2 vs Groupe 1", "Pas des verbes"], correct: 1, feedback: { correct: "✅ Correct! Groupes différents", wrong: ["❌ Regarde les règles", "❌ Étudie les groupes"] } },
-                    { type: "qcm", question: "私は本を書きます veut dire:", options: ["Je lis un livre", "J'écris un livre", "Je suis un livre"], correct: 1, feedback: { correct: "✅ Correct! 書きます = écrire", wrong: ["❌ Regarde le verbe", "❌ Étudie le vocabulaire"] } }
+                    { type: "qcm", question: "かきます = ?", options: ["Écouter", "Écrire", "Marcher"], correct: 1, feedback: { correct: "✅ かきます = Écrire", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } },
+                    { type: "qcm", question: "ききます = ?", options: ["Écrire", "Écouter", "Parler"], correct: 1, feedback: { correct: "✅ ききます = Écouter", wrong: ["❌ Écrire = かきます", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "あるきます = ?", options: ["Marcher", "Courir", "Danser"], correct: 0, feedback: { correct: "✅ あるきます = Marcher", wrong: ["❌ Regarde le vocabulaire", "❌ Essaie encore"] } },
+                    { type: "qcm", question: "Groupe 2 se termine par?", options: ["-ます", "-きます", "-ります"], correct: 1, feedback: { correct: "✅ Se termine par きます!", wrong: ["❌ C'est -きます!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Différence Groupe 1 vs 2?", options: ["Aucune", "Groupe 2 a き", "Groupe 2 a り"], correct: 1, feedback: { correct: "✅ Groupe 2 a き!", wrong: ["❌ Il y a une diff!", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 8,
-                title: "Questions",
+                title: "Questions avec か",
                 vocabulary: [
-                    { jp: "ですか", roma: "desuka", fr: "Est-ce que?" },
-                    { jp: "何", roma: "nani", fr: "Quoi" }
+                    { jp: "ですか", roma: "desuka", fr: "Est-ce que...?" },
+                    { jp: "なに", roma: "nani", fr: "Quoi?" },
+                    { jp: "だれ", roma: "dare", fr: "Qui?" }
                 ],
                 lesson: {
-                    title: "Former des questions",
-                    intro: "Pour poser une question, ajoute か!",
-                    content: "<div class='japanese-large'>これは何ですか</div><div class='romaji-line'>kore wa nani desu ka</div><div class='translation-line'>Qu'est-ce que c'est?</div><div class='note'>か à la fin d'une phrase rend celle-ci interrogative!</div>"
+                    title: "Questions avec か",
+                    intro: "Comment poser des questions!",
+                    content: "<p><strong>か</strong> à la fin = question</p><div class='hiragana-large'>これですか?</div><div class='romaji-line'>kore desu ka? (Ceci est...?)</div><div class='note'><strong>🔑 Rule:</strong> か à la fin change tout en question</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "か = ?", options: ["Marqueur de question", "Négation", "Direction"], correct: 0, feedback: { correct: "✅ か = Marqueur de question", wrong: ["❌ ません = Négation", "❌ に = Direction"] } },
-                    { type: "qcm", question: "Quelle phrase est une question?", options: ["これは本です", "これは何ですか", "これは本だ"], correct: 1, feedback: { correct: "✅ か rend la phrase interrogative", wrong: ["❌ Pas de か", "❌ Étudie か"] } },
-                    { type: "fill", question: "あなたは学生ですか veut dire:", options: ["Tu es étudiant", "Je suis étudiant", "Il est étudiant"], correct: 0, feedback: { correct: "✅ Correct! C'est une question", wrong: ["❌ Regarde le sujet", "❌ Étudie"] } },
-                    { type: "qcm", question: "Ces は何ですか est une:", options: ["Affirmation", "Question", "Négation"], correct: 1, feedback: { correct: "✅ Correct! か indique une question", wrong: ["❌ Regarde か", "❌ Étudie"] } },
-                    { type: "qcm", question: "La ponctuation pour une question est:", options: ["。", "！", "？ ou ？"], correct: 2, feedback: { correct: "✅ Correct! On utilise ？", wrong: ["❌ 。 = fin", "❌ ！ = exclamation"] } }
+                    { type: "qcm", question: "ですか = ?", options: ["Être", "Est-ce que...?", "Pourquoi?"], correct: 1, feedback: { correct: "✅ ですか = Est-ce que...?", wrong: ["❌ C'est une question!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "なに = ?", options: ["Qui?", "Quoi?", "Où?"], correct: 1, feedback: { correct: "✅ なに = Quoi?", wrong: ["❌ Qui = だれ", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "だれ = ?", options: ["Quoi?", "Qui?", "Quand?"], correct: 1, feedback: { correct: "✅ だれ = Qui?", wrong: ["❌ Quoi = なに", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "Position de か?", options: ["Au début", "À la fin", "Peut importe"], correct: 1, feedback: { correct: "✅ À la fin!", wrong: ["❌ C'est à la fin!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Qu'est-ce que か?", options: ["Verbe", "Particule de question", "Adjectif"], correct: 1, feedback: { correct: "✅ Particule de question!", wrong: ["❌ C'est pas un verbe!", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 9,
                 title: "Mots interrogatifs",
                 vocabulary: [
-                    { jp: "誰", roma: "dare", fr: "Qui" },
-                    { jp: "どこ", roma: "doko", fr: "Où" },
-                    { jp: "いつ", roma: "itsu", fr: "Quand" }
+                    { jp: "だれ", roma: "dare", fr: "Qui?" },
+                    { jp: "どこ", roma: "doko", fr: "Où?" },
+                    { jp: "いつ", roma: "itsu", fr: "Quand?" }
                 ],
                 lesson: {
                     title: "Mots interrogatifs",
-                    intro: "Les mots interrogatifs commencent souvent par ど!",
-                    content: "<div class='japanese-large'>誰ですか</div><div class='romaji-line'>dare desu ka</div><div class='translation-line'>Qui es-tu?</div><div class='note'>dare (誰) = Qui, doko (どこ) = Où, itsu (いつ) = Quand</div>"
+                    intro: "Les 5 W du japonais!",
+                    content: "<p><strong>だれ (dare)</strong> = Qui?</p><p><strong>どこ (doko)</strong> = Où?</p><p><strong>いつ (itsu)</strong> = Quand?</p><div class='note'><strong>🔑 Utilisation:</strong> だれですか? = Qui es-tu?</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "誰 = ?", options: ["Qui", "Où", "Quand"], correct: 0, feedback: { correct: "✅ 誰 = Qui", wrong: ["❌ どこ = Où", "❌ Étudie"] } },
-                    { type: "qcm", question: "Traduis: どこ", options: ["Qui", "Où", "Quand"], correct: 1, feedback: { correct: "✅ どこ = Où", wrong: ["❌ 誰 = Qui", "❌ Étudie"] } },
-                    { type: "fill", question: "いつ = ?", options: ["Qui", "Où", "Quand"], correct: 2, feedback: { correct: "✅ いつ = Quand", wrong: ["❌ C'est un autre mot", "❌ Étudie le voc"] } },
-                    { type: "qcm", question: "誰がいますか veut dire:", options: ["Où es-tu?", "Qui est là?", "Quand?"], correct: 1, feedback: { correct: "✅ Correct! 誰 = Qui", wrong: ["❌ Regarde le mot", "❌ Étudie"] } },
-                    { type: "qcm", question: "Les mots interrogatifs usuels sont:", options: ["dare, nani, doko", "dare, doko, itsu", "nani, itsu, dare"], correct: 1, feedback: { correct: "✅ Correct! dare, doko, itsu", wrong: ["❌ Étudie les mots", "❌ Regarde la leçon"] } }
+                    { type: "qcm", question: "だれ = ?", options: ["Quoi?", "Qui?", "Où?"], correct: 1, feedback: { correct: "✅ だれ = Qui?", wrong: ["❌ Quoi = なに", "❌ Où = どこ"] } },
+                    { type: "qcm", question: "どこ = ?", options: ["Quand?", "Où?", "Pourquoi?"], correct: 1, feedback: { correct: "✅ どこ = Où?", wrong: ["❌ Quand = いつ", "❌ Regarde le vocabulaire"] } },
+                    { type: "qcm", question: "いつ = ?", options: ["Quand?", "Où?", "Quoi?"], correct: 0, feedback: { correct: "✅ いつ = Quand?", wrong: ["❌ Où = どこ", "❌ Quoi = なに"] } },
+                    { type: "qcm", question: "Comment demander 'Qui'?", options: ["なにですか", "だれですか", "どこですか"], correct: 1, feedback: { correct: "✅ だれですか!", wrong: ["❌ C'est だれ!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Comment demander 'Où'?", options: ["なにですか", "だれですか", "どこですか"], correct: 2, feedback: { correct: "✅ どこですか!", wrong: ["❌ C'est どこ!", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 10,
-                title: "Aspect verbal",
+                title: "Aspect verbal (ている)",
                 vocabulary: [
-                    { jp: "ている", roma: "te-iru", fr: "En train de" },
-                    { jp: "た", roma: "ta", fr: "Passé" }
+                    { jp: "ている", roma: "teiru", fr: "En train de..." },
+                    { jp: "いた", roma: "ita", fr: "Était" },
+                    { jp: "いる", roma: "iru", fr: "Être (présent)" }
                 ],
                 lesson: {
                     title: "Aspect verbal",
-                    intro: "Marque l'état de l'action!",
-                    content: "<div class='japanese-large'>今、飲んでいます</div><div class='romaji-line'>ima, nomde iru</div><div class='translation-line'>Je suis en train de boire</div><div class='note'>ている indique une action en cours</div>"
+                    intro: "Les nuances de temps en japonais!",
+                    content: "<p><strong>-ている</strong> = Action en cours</p><p><strong>-た</strong> = Passé</p><p><strong>-る</strong> = Présent/Futur</p><div class='hiragana-large'>たべている</div><div class='romaji-line'>tabete iru (En train de manger)</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "ている = ?", options: ["En train de / En cours", "Passé", "Futur"], correct: 0, feedback: { correct: "✅ ている = Action en cours", wrong: ["❌ Passé = た", "❌ Étudie"] } },
-                    { type: "qcm", question: "飲んでいます veut dire:", options: ["Boit (général)", "Est en train de boire", "A bu"], correct: 1, feedback: { correct: "✅ Correct! ている = en cours", wrong: ["❌ Regarde l'aspect", "❌ Étudie ている"] } },
-                    { type: "fill", question: "La forme passée de 飲みます est:", options: ["飲みます", "飲みました", "飲んでいます"], correct: 1, feedback: { correct: "✅ 飲みました = a bu (passé)", wrong: ["❌ Présent", "❌ Action en cours"] } },
-                    { type: "qcm", question: "今、飲んでいます vs 昨日飲みました:", options: ["Identiques", "Présent continu vs Passé simple", "Les deux passé"], correct: 1, feedback: { correct: "✅ Correct! Aspects différents", wrong: ["❌ Regarde les aspects", "❌ Étudie"] } },
-                    { type: "qcm", question: "L'aspect verbal indique:", options: ["Le temps", "L'état de l'action", "Le lieu"], correct: 1, feedback: { correct: "✅ Correct! Aspects = état de l'action", wrong: ["❌ Regarde la définition", "❌ Étudie"] } }
+                    { type: "qcm", question: "ている = ?", options: ["Passé", "En train de", "Futur"], correct: 1, feedback: { correct: "✅ ている = En train de!", wrong: ["❌ Passé = た", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "た = ?", options: ["Passé", "Présent", "Futur"], correct: 0, feedback: { correct: "✅ た = Passé", wrong: ["❌ Présent = う", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "いる = ?", options: ["Passé", "Présent/Futur", "En cours"], correct: 1, feedback: { correct: "✅ いる = Présent/Futur", wrong: ["❌ Passé = た", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "たべている = ?", options: ["Mangeait", "En train de manger", "Mangera"], correct: 1, feedback: { correct: "✅ En train de manger!", wrong: ["❌ C'est l'aspect continu!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Combien d'aspects?", options: ["2", "3", "4"], correct: 1, feedback: { correct: "✅ 3 aspects principaux!", wrong: ["❌ Regarde la leçon", "❌ Compte bien"] } }
                 ]
             },
             {
                 id: 11,
-                title: "Conjonctions",
+                title: "Conjonctions (から, でも)",
                 vocabulary: [
                     { jp: "から", roma: "kara", fr: "Parce que" },
-                    { jp: "でも", roma: "demo", fr: "Mais" }
+                    { jp: "でも", roma: "demo", fr: "Mais" },
+                    { jp: "そして", roma: "soshite", fr: "Et" }
                 ],
                 lesson: {
                     title: "Conjonctions",
-                    intro: "Relie les phrases ensemble!",
-                    content: "<div class='japanese-large'>忙しいから行けません</div><div class='romaji-line'>isogashii kara ikemasen</div><div class='translation-line'>Parce que c'est occupé, je ne peux pas y aller</div><div class='note'>から = cause, でも = contraste</div>"
+                    intro: "Comment lier les phrases!",
+                    content: "<p><strong>から</strong> = Parce que (cause)</p><p><strong>でも</strong> = Mais (opposition)</p><p><strong>そして</strong> = Et (addition)</p><div class='note'><strong>🔑 Usage:</strong> Phrase1 から Phrase2 (phrase2 parce que phrase1)</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "から = ?", options: ["Parce que", "Mais", "Donc"], correct: 0, feedback: { correct: "✅ から = Raison/Cause", wrong: ["❌ でも = Mais", "❌ Étudie"] } },
-                    { type: "qcm", question: "Traduis: でも", options: ["Parce que", "Mais", "Donc"], correct: 1, feedback: { correct: "✅ でも = Mais (contraste)", wrong: ["❌ から = Parce que", "❌ Étudie"] } },
-                    { type: "fill", question: "疲れたから、休みます veut dire:", options: ["Je suis fatigué mais...", "Parce que je suis fatigué, je me repose", "Je me repose toujours"], correct: 1, feedback: { correct: "✅ Correct! から = cause", wrong: ["❌ Regarde から", "❌ Étudie"] } },
-                    { type: "qcm", question: "好きですが、行きません veut dire:", options: ["J'aime et je vais", "J'aime mais je ne vais pas", "Je n'aime pas"], correct: 1, feedback: { correct: "✅ Correct! が = contraste léger (comme でも)", wrong: ["❌ Regarde の", "❌ Étudie"] } },
-                    { type: "qcm", question: "Les conjonctions relient:", options: ["Les mots", "Les phrases", "Les particules"], correct: 1, feedback: { correct: "✅ Correct! Conjonctions = connectent les phrases", wrong: ["❌ C'est plus que ça", "❌ Étudie"] } }
+                    { type: "qcm", question: "から = ?", options: ["Et", "Parce que", "Mais"], correct: 1, feedback: { correct: "✅ から = Parce que", wrong: ["❌ Et = そして", "❌ Mais = でも"] } },
+                    { type: "qcm", question: "でも = ?", options: ["Et", "Parce que", "Mais"], correct: 2, feedback: { correct: "✅ でも = Mais", wrong: ["❌ Et = そして", "❌ Parce que = から"] } },
+                    { type: "qcm", question: "そして = ?", options: ["Et", "Parce que", "Mais"], correct: 0, feedback: { correct: "✅ そして = Et", wrong: ["❌ Parce que = から", "❌ Mais = でも"] } },
+                    { type: "qcm", question: "Lien logique de から?", options: ["Opposition", "Addition", "Cause"], correct: 2, feedback: { correct: "✅ Cause (parce que)!", wrong: ["❌ Opposition = でも", "❌ Addition = そして"] } },
+                    { type: "qcm", question: "Lien logique de でも?", options: ["Opposition", "Addition", "Cause"], correct: 0, feedback: { correct: "✅ Opposition (mais)!", wrong: ["❌ Cause = から", "❌ Addition = そして"] } }
                 ]
             },
             {
                 id: 12,
                 title: "Niveaux de politesse",
                 vocabulary: [
-                    { jp: "ですます", roma: "desu-masu", fr: "Poli" },
-                    { jp: "だ", roma: "da", fr: "Informel" }
+                    { jp: "です", roma: "desu", fr: "Poli" },
+                    { jp: "ます", roma: "masu", fr: "Poli (verbes)" },
+                    { jp: "だ", roma: "da", fr: "Casual" }
                 ],
                 lesson: {
                     title: "Niveaux de politesse",
-                    intro: "Adapte ta politesse au contexte!",
-                    content: "<div style='display:flex; gap:20px;'><div><p>POLI:</p><div class='japanese-large'>これは本です</div></div><div><p>INFORMEL:</p><div class='japanese-large'>これは本だ</div></div></div><div class='translation-line'>Ceci est un livre</div><div class='note'>Même sens, niveaux de politesse différents!</div>"
+                    intro: "Poli vs casual!",
+                    content: "<p><strong>Poli:</strong> です、ます</p><p><strong>Casual:</strong> だ、う</p><div class='note'><strong>🔑 Rule:</strong> Toujours utiliser la forme poli avec les inconnus!</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "ですます = ?", options: ["Formel/Poli", "Informel", "Très poli"], correct: 0, feedback: { correct: "✅ ですます = Niveau poli", wrong: ["❌ だ = Informel", "❌ Étudie"] } },
-                    { type: "qcm", question: "Quelle forme est informelle?", options: ["これは本です", "これは本だ", "これは本ですか"], correct: 1, feedback: { correct: "✅ Correct! だ = informel", wrong: ["❌ Regarde la forme", "❌ Étudie"] } },
-                    { type: "fill", question: "On utilise ですます avec:", options: ["Amis", "Inconnus/supérieurs", "Famille"], correct: 1, feedback: { correct: "✅ Correct! ですます = contexte formel", wrong: ["❌ Regarde le contexte", "❌ Étudie"] } },
-                    { type: "qcm", question: "私は学生だ. est:", options: ["Poli", "Informel", "Très poli"], correct: 1, feedback: { correct: "✅ Correct! だ = informel", wrong: ["❌ Regarde da", "❌ Étudie"] } },
-                    { type: "qcm", question: "Avec ta famille, tu utilises:", options: ["ですます", "だ (informel)", "Keigo (très poli)"], correct: 1, feedback: { correct: "✅ Correct! だ est plus naturel entre proches", wrong: ["❌ Trop formel", "❌ Regarde le contexte"] } }
+                    { type: "qcm", question: "Quelle forme = Poli?", options: ["だ", "ます", "う"], correct: 1, feedback: { correct: "✅ ます = Poli", wrong: ["❌ Casual = だ", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Quelle forme = Casual?", options: ["です", "だ", "ます"], correct: 1, feedback: { correct: "✅ だ = Casual", wrong: ["❌ Poli = です/ます", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Forme poli copule?", options: ["だ", "です", "な"], correct: 1, feedback: { correct: "✅ です = Copule poli", wrong: ["❌ Casual = だ", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Quand utiliser 'casual'?", options: ["Toujours", "Avec amis/famille", "Jamais"], correct: 1, feedback: { correct: "✅ Avec amis/famille!", wrong: ["❌ Sois poli d'abord!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Combien de niveaux?", options: ["2 principaux", "3", "5"], correct: 0, feedback: { correct: "✅ 2 niveaux principaux", wrong: ["❌ Poli et casual surtout", "❌ Regarde la leçon"] } }
                 ]
             },
             {
                 id: 13,
-                title: "Révision complète",
+                title: "✅ Révision Complète",
                 vocabulary: [
-                    { jp: "おめでとう", roma: "omedetou", fr: "Félicitations" },
-                    { jp: "頑張ってください", roma: "ganbatte kudasai", fr: "Bon courage" }
+                    { jp: "おめでとう", roma: "omedetou", fr: "Félicitations!" },
+                    { jp: "これが", roma: "korega", fr: "Ceci est..." },
+                    { jp: "ぶんぽう", roma: "bunpou", fr: "Grammaire" }
                 ],
                 lesson: {
-                    title: "✅ Révision Complète: 13 Règles Maîtrisées!",
-                    intro: "Bravo! Tu as terminé toutes les règles fondamentales du japonais!",
-                    content: "<div class='note'><strong>🎉 Prochaines étapes:</strong><br/>- Révise régulièrement via les flashcards<br/>- Ajoute du vocabulaire personnel<br/>- Pratique la conversation<br/>- Lis des textes simples<br/>- Regarde des animes avec sous-titres!<br/><strong>頑張ってください!</strong></div>"
+                    title: "Révision Complète - 13 Règles de Grammaire",
+                    intro: "Tu maîtrises maintenant la grammaire de base!",
+                    content: "<p>Tu connais maintenant:</p><ul style='font-size: 18px; margin: 20px 0; line-height: 2;'><li>L'ordre SOV</li><li>Les particules (は、を、に)</li><li>La copule (です)</li><li>Les adjectifs (い、な)</li><li>Les verbes (Groupe 1, 2)</li><li>Les questions (か)</li><li>Les mots interrogatifs (だれ、どこ、いつ)</li><li>L'aspect verbal (ている、た)</li><li>Les conjonctions (から、でも)</li><li>Les niveaux de politesse (です/だ)</li></ul><div class='note' style='text-align:center; font-size: 20px;'><strong>おめでとうございます!</strong><br/>(Félicitations!)<br/><br/>Continues avec Hiragana → Katakana → Kanji!</div>"
                 },
                 exercises: [
-                    { type: "qcm", question: "As-tu maîtrisé les 12 règles?", options: ["Oui, allons-y!", "Non, je veux revoir"], correct: 0, feedback: { correct: "✅ Excellent! Tu es prêt pour l'étape suivante!", wrong: ["✅ C'est normal! Reviens quand tu veux!"] } },
-                    { type: "qcm", question: "L'ordre du japonais est:", options: ["SVO", "SOV", "VSO"], correct: 1, feedback: { correct: "✅ Rappel: SOV!", wrong: ["❌ Règle 1", "❌ Étudie"] } },
-                    { type: "qcm", question: "Particule de sujet:", options: ["を", "は", "に"], correct: 1, feedback: { correct: "✅ Rappel: は!", wrong: ["❌ を = objet", "❌ Étudie"] } },
-                    { type: "qcm", question: "Adjectif い se conjugue:", options: ["Directement", "Avec な", "Avec です seul"], correct: 0, feedback: { correct: "✅ Rappel: Règle 4!", wrong: ["❌ Regarde", "❌ Étudie"] } },
-                    { type: "qcm", question: "Marqueur de question:", options: ["か", "ん", "ね"], correct: 0, feedback: { correct: "✅ Rappel: か!", wrong: ["❌ Règle 8", "❌ Étudie"] } }
+                    { type: "qcm", question: "Combien de leçons?", options: ["10", "13", "15"], correct: 1, feedback: { correct: "✅ 13 règles!", wrong: ["❌ Compte bien", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Ordre = ?", options: ["SVO", "SOV", "VSO"], correct: 1, feedback: { correct: "✅ SOV!", wrong: ["❌ C'est pas français!", "❌ Regarde la leçon"] } },
+                    { type: "qcm", question: "Particule sujet = ?", options: ["を", "に", "は"], correct: 2, feedback: { correct: "✅ は!", wrong: ["❌ Objet = を", "❌ Direction = に"] } },
+                    { type: "qcm", question: "Copule = ?", options: ["が", "です", "を"], correct: 1, feedback: { correct: "✅ です!", wrong: ["❌ Sujet = が", "❌ Objet = を"] } },
+                    { type: "qcm", question: "Prochain étape?", options: ["Kanji", "Hiragana", "Vocabulaire"], correct: 1, feedback: { correct: "✅ Tu dois maîtriser Hiragana/Katakana!", wrong: ["❌ Apprendre les alphabets d'abord!", "❌ Respect l'ordre"] } }
                 ]
             }
         ];
 
+        // ========== ALPHABET DATA ==========
+        const hiraganaData = [
+            // Gojuon (a, i, u, e, o rows)
+            { jp: "あ", roma: "a", gr: "vowels" }, { jp: "い", roma: "i", gr: "vowels" }, { jp: "う", roma: "u", gr: "vowels" },
+            { jp: "え", roma: "e", gr: "vowels" }, { jp: "お", roma: "o", gr: "vowels" },
+            { jp: "か", roma: "ka", gr: "k" }, { jp: "き", roma: "ki", gr: "k" }, { jp: "く", roma: "ku", gr: "k" },
+            { jp: "け", roma: "ke", gr: "k" }, { jp: "こ", roma: "ko", gr: "k" },
+            { jp: "さ", roma: "sa", gr: "s" }, { jp: "し", roma: "shi", gr: "s" }, { jp: "す", roma: "su", gr: "s" },
+            { jp: "せ", roma: "se", gr: "s" }, { jp: "そ", roma: "so", gr: "s" },
+            { jp: "た", roma: "ta", gr: "t" }, { jp: "ち", roma: "chi", gr: "t" }, { jp: "つ", roma: "tsu", gr: "t" },
+            { jp: "て", roma: "te", gr: "t" }, { jp: "と", roma: "to", gr: "t" },
+            { jp: "な", roma: "na", gr: "n" }, { jp: "に", roma: "ni", gr: "n" }, { jp: "ぬ", roma: "nu", gr: "n" },
+            { jp: "ね", roma: "ne", gr: "n" }, { jp: "の", roma: "no", gr: "n" },
+            { jp: "は", roma: "ha", gr: "h" }, { jp: "ひ", roma: "hi", gr: "h" }, { jp: "ふ", roma: "fu", gr: "h" },
+            { jp: "へ", roma: "he", gr: "h" }, { jp: "ほ", roma: "ho", gr: "h" },
+            { jp: "ま", roma: "ma", gr: "m" }, { jp: "み", roma: "mi", gr: "m" }, { jp: "む", roma: "mu", gr: "m" },
+            { jp: "め", roma: "me", gr: "m" }, { jp: "も", roma: "mo", gr: "m" },
+            { jp: "や", roma: "ya", gr: "y" }, { jp: "ゆ", roma: "yu", gr: "y" }, { jp: "よ", roma: "yo", gr: "y" },
+            { jp: "ら", roma: "ra", gr: "r" }, { jp: "り", roma: "ri", gr: "r" }, { jp: "る", roma: "ru", gr: "r" },
+            { jp: "れ", roma: "re", gr: "r" }, { jp: "ろ", roma: "ro", gr: "r" },
+            { jp: "わ", roma: "wa", gr: "w" }, { jp: "を", roma: "wo", gr: "w" }, { jp: "ん", roma: "n", gr: "n_final" }
+        ];
+
+        const katakanaData = [
+            { jp: "ア", roma: "a", gr: "vowels" }, { jp: "イ", roma: "i", gr: "vowels" }, { jp: "ウ", roma: "u", gr: "vowels" },
+            { jp: "エ", roma: "e", gr: "vowels" }, { jp: "オ", roma: "o", gr: "vowels" },
+            { jp: "カ", roma: "ka", gr: "k" }, { jp: "キ", roma: "ki", gr: "k" }, { jp: "ク", roma: "ku", gr: "k" },
+            { jp: "ケ", roma: "ke", gr: "k" }, { jp: "コ", roma: "ko", gr: "k" },
+            { jp: "サ", roma: "sa", gr: "s" }, { jp: "シ", roma: "shi", gr: "s" }, { jp: "ス", roma: "su", gr: "s" },
+            { jp: "セ", roma: "se", gr: "s" }, { jp: "ソ", roma: "so", gr: "s" },
+            { jp: "タ", roma: "ta", gr: "t" }, { jp: "チ", roma: "chi", gr: "t" }, { jp: "ツ", roma: "tsu", gr: "t" },
+            { jp: "テ", roma: "te", gr: "t" }, { jp: "ト", roma: "to", gr: "t" },
+            { jp: "ナ", roma: "na", gr: "n" }, { jp: "ニ", roma: "ni", gr: "n" }, { jp: "ヌ", roma: "nu", gr: "n" },
+            { jp: "ネ", roma: "ne", gr: "n" }, { jp: "ノ", roma: "no", gr: "n" },
+            { jp: "ハ", roma: "ha", gr: "h" }, { jp: "ヒ", roma: "hi", gr: "h" }, { jp: "フ", roma: "fu", gr: "h" },
+            { jp: "ヘ", roma: "he", gr: "h" }, { jp: "ホ", roma: "ho", gr: "h" },
+            { jp: "マ", roma: "ma", gr: "m" }, { jp: "ミ", roma: "mi", gr: "m" }, { jp: "ム", roma: "mu", gr: "m" },
+            { jp: "メ", roma: "me", gr: "m" }, { jp: "モ", roma: "mo", gr: "m" },
+            { jp: "ヤ", roma: "ya", gr: "y" }, { jp: "ユ", roma: "yu", gr: "y" }, { jp: "ヨ", roma: "yo", gr: "y" },
+            { jp: "ラ", roma: "ra", gr: "r" }, { jp: "リ", roma: "ri", gr: "r" }, { jp: "ル", roma: "ru", gr: "r" },
+            { jp: "レ", roma: "re", gr: "r" }, { jp: "ロ", roma: "ro", gr: "r" },
+            { jp: "ワ", roma: "wa", gr: "w" }, { jp: "ヲ", roma: "wo", gr: "w" }, { jp: "ン", roma: "n", gr: "n_final" }
+        ];
+
+        // Kanji 100 communs (simplifié)
+        const kanjiData = [
+            { jp: "日", roma: "hi/nichi", en: "sun/day" }, { jp: "月", roma: "tsuki/getsu", en: "moon/month" },
+            { jp: "火", roma: "hi/ka", en: "fire" }, { jp: "水", roma: "mizu/sui", en: "water" },
+            { jp: "木", roma: "ki/moku", en: "tree" }, { jp: "金", roma: "kin/kane", en: "gold/money" },
+            { jp: "土", roma: "tsuchi/do", en: "soil/earth" }, { jp: "人", roma: "hito/nin", en: "person" },
+            { jp: "手", roma: "te/shu", en: "hand" }, { jp: "足", roma: "ashi/soku", en: "foot/leg" },
+            { jp: "目", roma: "me/moku", en: "eye" }, { jp: "口", roma: "kuchi/kou", en: "mouth" },
+            { jp: "心", roma: "kokoro/shin", en: "heart/mind" }, { jp: "大", roma: "ookii/dai", en: "big" },
+            { jp: "小", roma: "chiisai/sho", en: "small" }, { jp: "上", roma: "ue/jou", en: "up/above" },
+            { jp: "下", roma: "shita/ka", en: "down/below" }, { jp: "左", roma: "hidari/sa", en: "left" },
+            { jp: "右", roma: "migi/u", en: "right" }, { jp: "中", roma: "naka/chu", en: "middle/center" },
+            { jp: "高", roma: "takai/kou", en: "tall/high" }, { jp: "低", roma: "hikui/tei", en: "low" },
+            { jp: "長", roma: "nagai/chou", en: "long" }, { jp: "短", roma: "mijikai/tan", en: "short" },
+            { jp: "新", roma: "atarashii/shin", en: "new" }, { jp: "古", roma: "furui/ko", en: "old" },
+            { jp: "多", roma: "ooi/ta", en: "many" }, { jp: "少", roma: "sukunai/shou", en: "few/little" },
+            { jp: "好", roma: "suki/kou", en: "like" }, { jp: "悪", roma: "warui/aku", en: "bad" },
+            { jp: "男", roma: "otoko/dan", en: "male/man" }, { jp: "女", roma: "onna/jo", en: "female/woman" },
+            { jp: "子", roma: "ko/shi", en: "child" }, { jp: "学", roma: "gaku", en: "study/school" },
+            { jp: "生", roma: "sei/nama", en: "life/birth/raw" }, { jp: "先", roma: "saki/sen", en: "ahead/before" },
+            { jp: "今", roma: "ima/kon", en: "now/present" }, { jp: "後", roma: "ato/go", en: "after/behind" },
+            { jp: "春", roma: "haru/shun", en: "spring" }, { jp: "夏", roma: "natsu/ka", en: "summer" },
+            { jp: "秋", roma: "aki/shu", en: "autumn" }, { jp: "冬", roma: "fuyu/tou", en: "winter" },
+            { jp: "行", roma: "iku/kou", en: "go" }, { jp: "来", roma: "kuru/rai", en: "come" },
+            { jp: "出", roma: "deru/shutsu", en: "go out/come out" }, { jp: "入", roma: "hairu/nyuu", en: "enter" },
+            { jp: "食", roma: "taberu/shoku", en: "eat" }, { jp: "飲", roma: "nomu/in", en: "drink" },
+            { jp: "見", roma: "miru/ken", en: "see/watch" }, { jp: "聞", roma: "kiku/mon", en: "hear/listen" },
+            { jp: "読", roma: "yomu/doku", en: "read" }, { jp: "書", roma: "kaku/sho", en: "write" },
+            { jp: "話", roma: "hanasu/wa", en: "speak/talk" }, { jp: "思", roma: "omou/shi", en: "think" },
+            { jp: "知", roma: "shiru/chi", en: "know" }, { jp: "感", roma: "kan", en: "feel" },
+            { jp: "家", roma: "ie/ka", en: "house/home" }, { jp: "国", roma: "kuni/koku", en: "country/nation" },
+            { jp: "山", roma: "yama/san", en: "mountain" }, { jp: "川", roma: "kawa/sen", en: "river" },
+            { jp: "海", roma: "umi/kai", en: "sea/ocean" }, { jp: "森", roma: "mori", en: "forest" },
+            { jp: "花", roma: "hana/ka", en: "flower" }, { jp: "草", roma: "kusa/sou", en: "grass" },
+            { jp: "木", roma: "ki/moku", en: "tree/wood" }, { jp: "石", roma: "ishi/seki", en: "stone/rock" },
+            { jp: "火", roma: "hi/ka", en: "fire" }, { jp: "空", roma: "sora/ku", en: "sky" },
+            { jp: "雨", roma: "ame/u", en: "rain" }, { jp: "雪", roma: "yuki/setsu", en: "snow" },
+            { jp: "風", roma: "kaze/fu", en: "wind" }, { jp: "光", roma: "hikari/kou", en: "light" },
+            { jp: "音", roma: "oto/on", en: "sound" }, { jp: "色", roma: "iro/shoku", en: "color" },
+            { jp: "味", roma: "aji/mi", en: "taste" }, { jp: "臭", roma: "nioi/shu", en: "smell/odor" },
+            { jp: "力", roma: "chikara/ryoku", en: "power/strength" }, { jp: "数", roma: "kazu/su", en: "number/count" },
+            { jp: "形", roma: "katachi/kei", en: "shape/form" }, { jp: "時", roma: "toki/ji", en: "time" },
+            { jp: "間", roma: "aida/kan", en: "space/interval/between" }, { jp: "分", roma: "bun/fun", en: "minute/part" }
+        ];
+
+        // ========== APP CLASS ==========
         class App {
             constructor() {
-                console.log("App initialized");
                 this.currentRule = null;
                 this.currentExerciseIndex = 0;
                 this.exerciseScores = 0;
                 this.statuses = this.loadStatuses();
-                this.currentTab = 'lessons';
+                this.currentTab = 'grammar';
                 this.renderHome();
+                
+                // Alphabet learning state
+                this.alphabetState = { hiragana: {}, katakana: {}, kanji: {} };
+                this.loadAlphabetStates();
             }
 
             loadStatuses() {
@@ -501,24 +604,41 @@
                 this.statuses = statuses;
             }
 
+            loadAlphabetStates() {
+                const hiraganaStates = JSON.parse(localStorage.getItem('hiraganaState') || '{}');
+                const katakanaStates = JSON.parse(localStorage.getItem('katakanaState') || '{}');
+                const kanjiStates = JSON.parse(localStorage.getItem('kanjiState') || '{}');
+                this.alphabetState = { hiragana: hiraganaStates, katakana: katakanaStates, kanji: kanjiStates };
+            }
+
+            saveAlphabetState(type) {
+                localStorage.setItem(type + 'State', JSON.stringify(this.alphabetState[type]));
+            }
+
             switchTab(tab) {
-                console.log("Switching to:", tab);
-                document.getElementById('lessonsContent').classList.remove('active');
-                document.getElementById('vocabContent').classList.remove('active');
+                document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 
-                if (tab === 'lessons') {
-                    document.getElementById('lessonsContent').classList.add('active');
+                if (tab === 'grammar') {
+                    document.getElementById('grammarContent').classList.add('active');
                     document.querySelectorAll('.tab-btn')[0].classList.add('active');
                     this.renderHome();
-                } else {
-                    document.getElementById('vocabContent').classList.add('active');
+                } else if (tab === 'hiragana') {
+                    document.getElementById('hiraganaContent').classList.add('active');
                     document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                    this.startAlphabetExercise('hiragana', hiraganaData);
+                } else if (tab === 'katakana') {
+                    document.getElementById('katakanaContent').classList.add('active');
+                    document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                    this.startAlphabetExercise('katakana', katakanaData);
+                } else if (tab === 'kanji') {
+                    document.getElementById('kanjiContent').classList.add('active');
+                    document.querySelectorAll('.tab-btn')[3].classList.add('active');
+                    this.startAlphabetExercise('kanji', kanjiData);
                 }
             }
 
             renderHome() {
-                console.log("Rendering home");
                 const grid = document.getElementById('rulesGrid');
                 grid.innerHTML = '';
                 
@@ -540,7 +660,6 @@
                 document.getElementById('progressText').textContent = `Progression: ${Math.round((completed / 13) * 100)}%`;
                 document.getElementById('completedCount').textContent = completed;
                 
-                // Afficher les écrans
                 document.getElementById('homeScreen').style.display = 'block';
                 document.getElementById('lessonScreen').style.display = 'none';
                 document.getElementById('exercisesScreen').style.display = 'none';
@@ -548,21 +667,20 @@
             }
 
             startLesson(ruleId) {
-                console.log("Starting lesson:", ruleId);
                 this.currentRule = rulesData.find(r => r.id === ruleId);
                 
                 let vocabHTML = '';
                 if (this.currentRule.vocabulary && this.currentRule.vocabulary.length > 0) {
-                    vocabHTML = '<div class="lesson-section" style="margin-top:20px;"><h3 style="color: var(--primary-dark); margin-bottom:15px;">📝 Vocabulaire</h3><div style="display:grid; gap:10px;">';
+                    vocabHTML = '<div class="lesson-section" style="margin-top:20px;"><h3 style="color: var(--primary-dark); margin-bottom:15px;">📝 Vocabulaire</h3><div class="vocab-grid">';
                     this.currentRule.vocabulary.forEach(v => {
-                        vocabHTML += `<div style="background:#f5f5f5; padding:12px; border-left:4px solid var(--primary); border-radius:4px;"><div style="font-size:28px; font-weight:bold; color:var(--primary);">${v.jp}</div><div style="color:var(--accent); font-weight:700; font-size:16px;">${v.roma}</div><div style="color:#666; font-size:15px;">${v.fr}</div></div>`;
+                        vocabHTML += `<div class="vocab-item"><div class="vocab-item-jp">${v.jp}</div><div class="vocab-item-roma">${v.roma}</div><div class="vocab-item-fr">${v.fr}</div></div>`;
                     });
                     vocabHTML += '</div></div>';
                 }
                 
                 const content = `
                     <div class="lesson-section">
-                        <h2 class="lesson-title">📚 Règle #${this.currentRule.id}: ${this.currentRule.title}</h2>
+                        <h2 class="lesson-title">📚 Leçon #${this.currentRule.id}: ${this.currentRule.title}</h2>
                         ${this.currentRule.lesson.intro ? `<p class="section-text">${this.currentRule.lesson.intro}</p>` : ''}
                         <div class="example-box">${this.currentRule.lesson.content}</div>
                     </div>
@@ -575,7 +693,6 @@
             }
 
             startExercises() {
-                console.log("Starting exercises");
                 if (!this.currentRule.exercises || this.currentRule.exercises.length === 0) {
                     alert('Pas d\'exercices pour cette leçon.');
                     return;
@@ -595,15 +712,9 @@
                 
                 let html = `<div class="exercise"><div class="exercise-title">${ex.question}</div>`;
                 
-                if (ex.type === 'qcm') {
-                    ex.options.forEach((opt, i) => {
-                        html += `<div class="qcm-option" onclick="app.selectOption(${i})" id="opt${i}">${opt}</div>`;
-                    });
-                } else if (ex.type === 'fill') {
-                    ex.options.forEach((opt, i) => {
-                        html += `<div class="qcm-option" onclick="app.selectOption(${i})" id="opt${i}">${opt}</div>`;
-                    });
-                }
+                ex.options.forEach((opt, i) => {
+                    html += `<div class="qcm-option" onclick="app.selectOption(${i})" id="opt${i}">${opt}</div>`;
+                });
                 
                 html += '<div id="feedback" class="feedback"></div></div>';
                 document.getElementById('exerciseContent').innerHTML = html;
@@ -662,7 +773,6 @@
                 this.statuses[this.currentRule.id].score = score;
                 this.saveStatuses(this.statuses);
                 
-                // Débloquer la leçon suivante
                 const nextRule = rulesData.find(r => r.id === this.currentRule.id + 1);
                 if (nextRule) {
                     this.statuses[nextRule.id].unlocked = true;
@@ -682,11 +792,158 @@
             goHome() {
                 this.renderHome();
             }
+
+            // ========== ALPHABET LEARNING ==========
+            startAlphabetExercise(type, data) {
+                this.currentAlphabetType = type;
+                this.alphabetData = data;
+                this.currentAlphabetIndex = 0;
+                this.alphabetScores = 0;
+                this.showAlphabetExercise();
+            }
+
+            showAlphabetExercise() {
+                const type = this.currentAlphabetType;
+                const data = this.alphabetData;
+                const current = data[this.currentAlphabetIndex];
+                
+                const exerciseType = Math.floor(Math.random() * 4); // 0=flashcard, 1=qcm_pro, 2=qcm_inv, 3=input
+                
+                let html = '';
+                if (exerciseType === 0) {
+                    html = this.generateFlashcard(current);
+                } else if (exerciseType === 1) {
+                    html = this.generateQCMPronunciation(current, data);
+                } else if (exerciseType === 2) {
+                    html = this.generateQCMInverse(current, data);
+                } else {
+                    html = this.generateInputExercise(current);
+                }
+                
+                const elemId = type + 'Exercise';
+                document.getElementById(elemId).innerHTML = html;
+                
+                const progElem = type + 'Progress';
+                const scoreElem = type + 'Score';
+                document.getElementById(progElem).textContent = this.currentAlphabetIndex + 1;
+                document.getElementById(scoreElem).textContent = Math.round((this.alphabetScores / (this.currentAlphabetIndex + 1)) * 100) || 0 + '%';
+            }
+
+            generateFlashcard(char) {
+                let flipped = false;
+                return `
+                    <div onclick="app.toggleFlashcard(this)" class="flashcard" style="cursor: pointer;">
+                        <div class="flashcard-front">${char.jp}</div>
+                        <div class="flashcard-back" style="display: none;">${char.roma}</div>
+                        <div class="flashcard-hint" style="display: none;">(clic pour continuer)</div>
+                    </div>
+                    <button class="btn" onclick="app.nextAlphabetExercise(true)" style="width: 100%; margin-top: 20px;">Continuer →</button>
+                `;
+            }
+
+            generateQCMPronunciation(char, data) {
+                const correctIndex = Math.floor(Math.random() * 3);
+                const options = [char.roma, char.roma, char.roma];
+                options[0] = data[Math.floor(Math.random() * data.length)].roma;
+                options[1] = data[Math.floor(Math.random() * data.length)].roma;
+                options[correctIndex] = char.roma;
+                
+                return `
+                    <div class="exercise">
+                        <div class="exercise-title" style="font-size: 48px; margin: 40px 0; text-align: center;">${char.jp}</div>
+                        <div class="exercise-title">C'est quoi?</div>
+                        ${options.map((opt, i) => `<div class="qcm-option" onclick="app.checkAlphabetAnswer(${i}, ${correctIndex})">${opt}</div>`).join('')}
+                    </div>
+                `;
+            }
+
+            generateQCMInverse(char, data) {
+                const correctIndex = Math.floor(Math.random() * 3);
+                const options = [char.jp, char.jp, char.jp];
+                options[0] = data[Math.floor(Math.random() * data.length)].jp;
+                options[1] = data[Math.floor(Math.random() * data.length)].jp;
+                options[correctIndex] = char.jp;
+                
+                return `
+                    <div class="exercise">
+                        <div class="exercise-title">Quel est le caractère?</div>
+                        <div style="font-size: 36px; margin: 40px 0; text-align: center; color: var(--accent); font-weight: bold;">${char.roma}</div>
+                        ${options.map((opt, i) => `<div class="qcm-option" onclick="app.checkAlphabetAnswer(${i}, ${correctIndex})">${opt}</div>`).join('')}
+                    </div>
+                `;
+            }
+
+            generateInputExercise(char) {
+                return `
+                    <div class="exercise">
+                        <div class="exercise-title" style="font-size: 48px; margin: 40px 0; text-align: center;">${char.jp}</div>
+                        <div class="exercise-title">Écris le romaji:</div>
+                        <input type="text" id="romajiInput" class="input-box" placeholder="Écris la prononciation..." />
+                        <button class="btn" onclick="app.checkRomajiInput('${char.roma}')" style="width: 100%;">Valider</button>
+                    </div>
+                `;
+            }
+
+            toggleFlashcard(element) {
+                const front = element.querySelector('.flashcard-front');
+                const back = element.querySelector('.flashcard-back');
+                const hint = element.querySelector('.flashcard-hint');
+                
+                if (front.style.display !== 'none') {
+                    front.style.display = 'none';
+                    back.style.display = 'block';
+                    hint.style.display = 'block';
+                } else {
+                    front.style.display = 'block';
+                    back.style.display = 'none';
+                    hint.style.display = 'none';
+                }
+            }
+
+            checkAlphabetAnswer(selected, correct) {
+                if (selected === correct) {
+                    this.alphabetScores++;
+                    alert('✅ Correct!');
+                } else {
+                    alert('❌ Incorrect, essaie encore!');
+                }
+                this.nextAlphabetExercise(true);
+            }
+
+            checkRomajiInput(correct) {
+                const input = document.getElementById('romajiInput').value.toLowerCase().trim();
+                if (input === correct.toLowerCase()) {
+                    this.alphabetScores++;
+                    alert('✅ Correct!');
+                    this.nextAlphabetExercise(true);
+                } else {
+                    alert(`❌ Incorrect! La bonne réponse est: ${correct}`);
+                    this.nextAlphabetExercise(true);
+                }
+            }
+
+            nextAlphabetExercise(success) {
+                this.currentAlphabetIndex++;
+                if (this.currentAlphabetIndex < this.alphabetData.length) {
+                    this.showAlphabetExercise();
+                } else {
+                    alert('🎉 Félicitations! Tu as fini tous les exercices de cette session!');
+                    this.currentAlphabetIndex = 0;
+                    this.showAlphabetExercise();
+                }
+            }
         }
 
         // INITIALIZE
         const app = new App();
-        console.log("App ready!");
+        console.log("✅ App ready!");
+
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('✅ Service Worker registered'))
+                .catch(err => console.error('❌ SW error:', err));
+        }
     </script>
 </body>
 </html>
