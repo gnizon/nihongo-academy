@@ -1,0 +1,19 @@
+{
+  "name": "日本語学習 - Académie 13 Règles",
+  "short_name": "日本語学習",
+  "description": "Apprentissage du japonais avec 13 leçons + flashcards",
+  "start_url": "/nihongo-academy-complete/",
+  "display": "standalone",
+  "background_color": "#0F2138",
+  "theme_color": "#1F9E92",
+  "orientation": "portrait-primary",
+  "scope": "/nihongo-academy-complete/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231F9E92' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>日</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
