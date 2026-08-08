@@ -80,6 +80,7 @@
 
         <div class="tabs">
             <button class="tab-btn active" onclick="app.switchTab('grammar')">📚 Grammaire</button>
+            <button class="tab-btn" onclick="app.switchTab('vocab')">🎴 Vocabulaire</button>
             <button class="tab-btn" onclick="app.switchTab('hiragana')">📝 Hiragana</button>
             <button class="tab-btn" onclick="app.switchTab('katakana')">📝 Katakana</button>
             <button class="tab-btn" onclick="app.switchTab('kanji')">📝 Kanji</button>
@@ -118,6 +119,14 @@
                     <div id="resultMessage" style="margin: 24px 0; font-size: 18px; background: white; padding: 20px; border-radius: 8px;"></div>
                     <button class="btn" onclick="app.goHome()" style="width: 100%; font-size: 18px;">Retour</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- ========== VOCABULAIRE ========== -->
+        <div id="vocabContent" class="content">
+            <div class="alphabet-container">
+                <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 28px;">🎴 Vocabulaire - Toutes les leçons</h2>
+                <div id="vocabList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
             </div>
         </div>
 
@@ -623,19 +632,51 @@
                     document.getElementById('grammarContent').classList.add('active');
                     document.querySelectorAll('.tab-btn')[0].classList.add('active');
                     this.renderHome();
+                } else if (tab === 'vocab') {
+                    document.getElementById('vocabContent').classList.add('active');
+                    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                    this.showAllVocab();
                 } else if (tab === 'hiragana') {
                     document.getElementById('hiraganaContent').classList.add('active');
-                    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                    document.querySelectorAll('.tab-btn')[2].classList.add('active');
                     this.startAlphabetExercise('hiragana', hiraganaData);
                 } else if (tab === 'katakana') {
                     document.getElementById('katakanaContent').classList.add('active');
-                    document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                    document.querySelectorAll('.tab-btn')[3].classList.add('active');
                     this.startAlphabetExercise('katakana', katakanaData);
                 } else if (tab === 'kanji') {
                     document.getElementById('kanjiContent').classList.add('active');
-                    document.querySelectorAll('.tab-btn')[3].classList.add('active');
+                    document.querySelectorAll('.tab-btn')[4].classList.add('active');
                     this.startAlphabetExercise('kanji', kanjiData);
                 }
+            }
+
+            showAllVocab() {
+                const vocabList = document.getElementById('vocabList');
+                vocabList.innerHTML = '';
+                
+                rulesData.forEach(rule => {
+                    const section = document.createElement('div');
+                    section.style.backgroundColor = '#f9f9f9';
+                    section.style.padding = '16px';
+                    section.style.borderRadius = '8px';
+                    section.style.borderLeft = '4px solid var(--primary)';
+                    
+                    let vocabHTML = `<h3 style="color: var(--primary-dark); margin-bottom: 12px; font-size: 16px;">Leçon #${rule.id}: ${rule.title}</h3>`;
+                    
+                    if (rule.vocabulary && rule.vocabulary.length > 0) {
+                        rule.vocabulary.forEach(v => {
+                            vocabHTML += `<div style="margin: 8px 0; padding: 8px; background: white; border-radius: 4px;">
+                                <div style="font-size: 20px; font-weight: bold; color: var(--primary);">${v.jp}</div>
+                                <div style="font-size: 14px; color: var(--accent); font-weight: 700;">${v.roma}</div>
+                                <div style="font-size: 13px; color: #666;">${v.fr}</div>
+                            </div>`;
+                        });
+                    }
+                    
+                    section.innerHTML = vocabHTML;
+                    vocabList.appendChild(section);
+                });
             }
 
             renderHome() {
